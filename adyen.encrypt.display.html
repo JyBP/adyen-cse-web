@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Example Payment Form</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+        
+            <fieldset>
+                <legend>Card Details</legend>
+                <div class="field">
+                    <label for="adyen-encrypted-form-number">
+                        <span>Card Number</span>
+                        <input type="text" id="adyen-encrypted-form-number" value="5555444433331111" size="20" autocomplete="off" data-encrypted-name="number" />
+                    </label>
+                    <span id="cardType"></span>
+                </div>
+
+                <div class="field">
+                    <label for="adyen-encrypted-form-cvc">
+                        <span>CVC</span>
+                        <input type="text" id="adyen-encrypted-form-cvc" value="737" size="4" maxlength="4" autocomplete="off" data-encrypted-name="cvc" />
+                    </label>
+                </div>
+                
+                <div class="field">
+                    <label for="adyen-encrypted-form-holder-name">
+                        <span>Card Holder Name</span>
+                        <input type="text" id="adyen-encrypted-form-holder-name" value="John Doe" size="20" autocomplete="off" data-encrypted-name="holderName" />
+                    </label>
+                </div>
+                
+                <div class="field">
+                    <label for="adyen-encrypted-form-expiry-month">
+                        <span>Expiration (MM/YYYY)</span>
+                        <input type="text" value="10"   id="adyen-encrypted-form-expiry-month" maxlength="2" size="2" autocomplete="off" data-encrypted-name="expiryMonth" /> / 
+                    </label>
+                    <!-- Do not use two input elements inside a single label. This will cause focus issues on the seoncd and latter fields using the mouse in various browsers -->
+                    <input type="text" value="2020" id="adyen-encrypted-form-expiry-year" maxlength="4" size="4" autocomplete="off" data-encrypted-name="expiryYear" />
+                </div>
+
+                <input type="hidden" id="adyen-encrypted-form-expiry-generationtime" value="generate-this-server-side" data-encrypted-name="generationtime" />
+                
+            </fieldset>
+
+            <button id="btn">adyen-card</button>
+        <p></p>
+        <p id="adyen-card"></p>
+
+        <!-- How to use the Adyen encryption client-side JS library -->
+        <!-- N.B. Make sure the library is *NOT* loaded in the "head" of the HTML document -->
+        <script type="text/javascript" src="js/adyen.encrypt.min.js?0_1_21"></script>        
+        <script type="text/javascript">
+            
+            // Public test Key
+            const key = '10001|DC18F24E63031E8393FB68A2C9BE8A57C52683AEB5C0E0B85C9247' +
+            '94CF9B95BDC03A68F56C35022F74F4816D9299D84A6EA71E22F3B5C49727' +
+            '68415FB436CF580ADFAA56484A0A2ACF4B589F1980C075FB906DED6E7186' +
+            '73A58C1267972DF4B0BCC9E04E7A447B78F1E97B67CE5729060DA5EFF5ED' +
+            '15E96F4647F7360B001513A879DCBBAF1C9F14488E5D5485A19035158693' +
+            'F165840C4FCD14317536EF026E05F55E24DA56BA56F77F9A7699BF05D513' +
+            'F2B205A82B97C9EC1E960F378A5529A74564957B3717A1F316F49E3C5B61' +
+            'F3642814A980082639896FDADA070C32058F35FD6636EA2B95267E4BAFA9' +
+            ' 7B57A44C53829D163201EBBC537543EAD2DEB9'
+
+            var cseInstance = adyen.encrypt.createEncryption(key, {});
+
+            var myBtn = document.getElementById('btn');
+            myBtn.addEventListener('click', function(event) {
+                DisplayAdyenCard();
+            });
+
+            function DisplayAdyenCard() {
+                var cardData = {
+                    number : document.getElementById("adyen-encrypted-form-number").value,
+                    cvc : document.getElementById("adyen-encrypted-form-cvc").value,
+                    holderName : document.getElementById("adyen-encrypted-form-holder-name").value,
+                    expiryMonth : document.getElementById("adyen-encrypted-form-expiry-month").value,
+                    expiryYear : document.getElementById("adyen-encrypted-form-expiry-year").value,
+                    generationtime : new Date().toISOString(),
+                };
+                adyenCard = cseInstance.encrypt(cardData);
+                console.log(adyenCard);
+                document.getElementById("adyen-card").innerHTML = adyenCard;
+                return false;
+            }
+        </script>
+    </body>
+</html>
